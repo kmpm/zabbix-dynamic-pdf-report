@@ -64,9 +64,6 @@ if (isset($_GET['ReportRange'])) {
 	}
 }
 
-// Set Timezone
-date_default_timezone_set("$timezone");
-
 // Calculate report starttime and endtime
 $report_start	= date('Y.m.d H:i',$starttime);
 $report_end	= date('Y.m.d H:i',$endtime);
@@ -83,6 +80,8 @@ $report_end	= date('Y.m.d H:i',$endtime);
 // Setup temporary file/directory names
 $z_tmpimg_path	= tempdir($z_tmp_path);
 $tmp_pdf_data	= tempnam($z_tmp_path,"zabbix_report");
+// Set Timezone
+date_default_timezone_set("$timezone");
 
 // Print Header if debug is on
 if ($debug) {
