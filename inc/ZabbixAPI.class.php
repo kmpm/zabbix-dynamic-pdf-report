@@ -247,7 +247,7 @@ class ZabbixAPI {
         self::$instance->last_error = false;
         
         // Make sure we're logged in, or trying to login...
-        if ($this->auth_hash == NULL && $method != 'user.authenticate')
+        if ($this->auth_hash == NULL && $method != 'user.login')
             return false;  // If we're not logged in, no wasting our time here
         
         // Try to retrieve this...
@@ -281,7 +281,7 @@ class ZabbixAPI {
      */
     private function __login() {
         // Try to login to our API
-        $data = $this->__callAPI('user.authenticate', array( 'password' => $this->password, 'user' => $this->username ));
+        $data = $this->__callAPI('user.login', array( 'password' => $this->password, 'user' => $this->username ));
         
         if ($this->debug)
             echo "__login() Got response from API: ($data)\n";
@@ -300,7 +300,7 @@ class ZabbixAPI {
      */
     private function __logout() {
         // Try to logout of our API
-        $data = $this->__callAPI('user.logout', array( 'user' => $this->username, 'auth' => self::$instance->auth_hash ));
+        $data = $this->__callAPI('user.logout', array( ));
         
         if ($this->debug)
             echo "__logout() Got response from API: ($data)\n";
