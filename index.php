@@ -214,7 +214,7 @@ jQuery(function(){
  jQuery('#datepicker_start').datetimepicker({
   dayOfWeekStart: 1,
   weeks: true,
-  format:'Y/m/d',
+  format:'Y-m-d',
   minDate:'-1971/01/01',// One year ago
   maxDate:'+1970/01/01',// Today is maximum date calendar
   onShow:function( ct ){
@@ -227,7 +227,7 @@ jQuery(function(){
  jQuery('#datepicker_end').datetimepicker({
   dayOfWeekStart : 1,
   weeks: true,
-  format:'Y/m/d',
+  format:'Y-m-d',
   minDate:'-1971/01/01',// One year ago
   maxDate:'+1970/01/01',// Today is maximum date calendar
   onShow:function( ct ){
