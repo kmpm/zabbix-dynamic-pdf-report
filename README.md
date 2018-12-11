@@ -6,7 +6,11 @@ and the goal of this fork is to create a standalone git repository
 together with some installation instructions.
 
 Also to make sure it works 100% with Zabbix 3.0 (LTS)
+# Goals
 
+* [ ] Make it work with 3.0 (LTS) - possibly
+* [ ] Make it work with 3.4 - likely
+* [ ] Make it work with 4.0 (LTS) - yes, please
 
 Installation
 ------------
