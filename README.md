@@ -18,6 +18,7 @@ cp config.inc.sample.php config.inc.php
 nano config.inc.php
 
 ```
+ You might need to change timezone in `/var/www/html/zabbix-dynamic-pdf-report/createpdf.php`
 
 
 develop
