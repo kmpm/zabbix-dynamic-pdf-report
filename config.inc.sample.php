@@ -19,6 +19,7 @@ $timezone	= 'Europe/Oslo';
 # TODO: Specify image size!
 $pdf_logo	= './images/zabbix.png';
 $company_name   = 'Zabbix';
+$z_api_debug_enabled = FALSE;
 
 //DO NOT CHANGE BELOW THIS LINE
 $z_tmp_cookies 	= "/tmp/";

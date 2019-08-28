@@ -18,8 +18,8 @@
  * --------------------------------------------------------------------------------
  * Definition of "Wishlist-ware"
  *
- * Andrew Farley (andrewfarley.com) wrote this file. As long as you retain the 
- * copyright and license you can do whatever you want with this. If you use this 
+ * Andrew Farley (andrewfarley.com) wrote this file. As long as you retain the
+ * copyright and license you can do whatever you want with this. If you use this
  * and it helps benefit you or your company (and you can afford it) buy me an item
  * from one of my wish lists (on my website) or if we cross paths buy me caffeine
  * in some form and we'll call it even!
@@ -39,7 +39,7 @@
  *      API will (possibly) create all the classes necessary to help validate data
  *      and ease the use of this API.
  *
- * Simple Usage Examples: 
+ * Simple Usage Examples:
  *      This is necessary before doing anything.  Your user must have API privileges
  *          ZabbixAPI::login('http://mywebsite.com/path/to/zabbix', 'api_user', 'api_pass');
  *      With no parameters, this simply grabs all valid userid into an array
@@ -50,7 +50,7 @@
  *      value you want to set (in this case, refresh)
  *          $result = ZabbixAPI::query('user','update',array('userid'=>1, 'refresh'=>1000));
  *
- *      NOTE: If any methods return PHP === FALSE, then you can use 
+ *      NOTE: If any methods return PHP === FALSE, then you can use
  *      ZabbixAPI::getLastError() to check what the problem was!  :)
  */
 class ZabbixAPI {
@@ -58,11 +58,11 @@ class ZabbixAPI {
      * Private constants, not intended to be changed or edited
      */
     CONST ZABBIX_API_URL = 'api_jsonrpc.php';
-    CONST PHPAPI_VERSION = '1.0';
+    CONST PHPAPI_VERSION = '1.1.0';
 
     // The private instance of this class
     private static $instance;
-    
+
     /**
      * Private class variables
      */
@@ -72,16 +72,16 @@ class ZabbixAPI {
     protected $auth_hash        = NULL;
     protected $debug            = false;
     protected $last_error       = false;
-    
+
     // we don't permit an explicit call of the constructor! ($api = new ZabbixAPI())
     protected function __construct() { }
     // we don't permit cloning of this static class ($x = clone $v)
     protected function __clone() { }
-    
+
     /**
      * Public facing functions
      */
-     
+
      /**
       * Login, this will attempt to login to Zabbix with the specified username and password
       */
@@ -114,7 +114,7 @@ class ZabbixAPI {
         // Attempt to login
         return self::$instance->__logout();
     }
-    
+
     public static function debugEnabled($value) {
         // Initialize instance if it isn't already
         self::__init();
@@ -123,14 +123,14 @@ class ZabbixAPI {
         else
             self::$instance->debug = false;
     }
-    
+
     /**
      * Generic API Call function, with no method or property validation
      */
     public static function fetch($object, $method, $properties = array()) {
         return self::$instance->__callAPI($object.'.'.$method, $properties);
     }
-    
+
     /**
      * Alias to fetch, but simply returns TRUE or FALSE.  This is typically for doing updates
      * and other "set/update" type commands
@@ -149,14 +149,14 @@ class ZabbixAPI {
         else
             return array($return);
     }
-    
+
     /**
      * Get the last error that
      */
     public static function getLastError() {
         return self::$instance->last_error;
     }
-    
+
     /**
      * Force return value to be a string
      */
@@ -179,7 +179,7 @@ class ZabbixAPI {
         else
             return $return;
     }
-    
+
     /**
      * Force return value to be the first column of the first row of an array, in the form of an array
      */
@@ -195,11 +195,11 @@ class ZabbixAPI {
             return $output;
         }
     }
-    
+
     /**
      * Private/protected functions, not to be called by any code outside this class
      */
-     
+
     /**
      * Private init function, which is called to ensure our instance is initialized
      */
@@ -207,7 +207,7 @@ class ZabbixAPI {
         if (get_class(self::$instance) != "ZabbixAPI")
             self::$instance = new ZabbixAPI();
     }
-    
+
     /**
      * Recursive function to get the first non array element of a multidimensional array
      */
@@ -219,7 +219,7 @@ class ZabbixAPI {
                 return $item;
         }
     }
-    
+
     /**
      * Builds a JSON-RPC request, designed just for Zabbix
      */
@@ -235,36 +235,36 @@ class ZabbixAPI {
         // Return our request, in JSON format
         return json_encode($request);
     }
-    
+
     /**
      * The private function that performs the call to a remote RPC/API call
      */
     private function __callAPI($method, $params = array()) {
         // Initialize instance if it isn't already, so no fatal PHP errors
         self::__init();
-        
+
         // Reset our "last error" variable
         self::$instance->last_error = false;
-        
+
         // Make sure we're logged in, or trying to login...
-        if ($this->auth_hash == NULL && $method != 'user.authenticate')
+        if ($this->auth_hash == NULL && $method != 'user.login')
             return false;  // If we're not logged in, no wasting our time here
-        
+
         // Try to retrieve this...
-        $data = self::__jsonRequest( 
-            $this->url.self::ZABBIX_API_URL, 
+        $data = self::__jsonRequest(
+            $this->url.self::ZABBIX_API_URL,
             self::__buildJSONRequest( $method, $params )
         );
-        
+
         if ($this->debug)
             echo "Got response from API: ($data)\n";
-        
+
         // Convert return data (JSON) to PHP array
         $decoded_data = json_decode($data, true);
-        
+
         if ($this->debug)
             echo "Response decoded: (".print_r($decoded_data,true)."\n";
-        
+
         // Return the data if it's valid
         if ( isset($decoded_data['id']) && $decoded_data['id'] == 1 && !empty($decoded_data['result']) ) {
             return $decoded_data['result'];
@@ -275,17 +275,17 @@ class ZabbixAPI {
             return false;
         }
     }
-    
+
     /**
      * Private login function to perform the login
      */
     private function __login() {
         // Try to login to our API
-        $data = $this->__callAPI('user.authenticate', array( 'password' => $this->password, 'user' => $this->username ));
-        
+        $data = $this->__callAPI('user.login', array( 'password' => $this->password, 'user' => $this->username ));
+
         if ($this->debug)
             echo "__login() Got response from API: ($data)\n";
-        
+
         if (isset($data) && strlen($data) == 32) {
             $this->auth_hash = $data;
             return true;
@@ -300,11 +300,11 @@ class ZabbixAPI {
      */
     private function __logout() {
         // Try to logout of our API
-        $data = $this->__callAPI('user.logout', array( 'user' => $this->username, 'auth' => self::$instance->auth_hash ));
-        
+        $data = $this->__callAPI('user.logout', array( ));
+
         if ($this->debug)
             echo "__logout() Got response from API: ($data)\n";
-        
+
         if (isset($data) && strlen($data) == 1) {
             $this->auth_hash = NULL;
             return true;
@@ -313,7 +313,7 @@ class ZabbixAPI {
             return false;
         }
     }
-    
+
     /**
      * Note: Headers must be in the string form, in an array...
      *   eg. $headers  =  array('Content-Type: application/json-rpc', 'Another-Header: value goes here');
@@ -323,8 +323,8 @@ class ZabbixAPI {
         // These are required for submitting JSON-RPC requests
         $headers[]  = 'Content-Type: application/json-rpc';
         // Well, ok this one isn't, but it's good to conform (sometimes)
-        $headers[]  = 'User-Agent: ZabbixAPI v'.ZabbixAPI::PHPAPI_VERSION.' - http://andrewfarley.com/zabbix_php_api';
-    
+        $headers[]  = 'User-Agent: ZabbixAPI v'.ZabbixAPI::PHPAPI_VERSION.' - https://github.com/kmpm/zabbix-dynamic-pdf-report';
+
         $opts = array(
                 CURLOPT_RETURNTRANSFER => true,     // Allows for the return of a curl handle
                 //CURLOPT_VERBOSE => true,          // outputs verbose curl information (like --verbose with curl on the cli)
@@ -336,23 +336,26 @@ class ZabbixAPI {
                 CURLOPT_FOLLOWLOCATION => true,     // Incase there's a redirect in place (moved zabbix url), follow it automatically
                 CURLOPT_FRESH_CONNECT => true       // Ensures we don't use a cached connection or response
                  );
-    
+
         // If we have headers set, put headers into our curl options
         if(is_array($headers) && count($headers)){
             $opts[CURLOPT_HTTPHEADER] = $headers;
         }
-        
+
         // This is a POST, not GET request
         $opts[CURLOPT_CUSTOMREQUEST] = "POST";
         $opts[CURLOPT_POSTFIELDS] = ( is_array($data) ? http_build_query($data) : $data );
-        
+
         // This is useful, incase we're remotely attempting to consume Zabbix's API to compress our data, save some bandwidth
         $opts[CURLOPT_ENCODING] = 'gzip';
-        
+
         // If we're in debug mode
         if (self::$instance->debug) {
             echo "CURL URL: $url\n<br>";
-            echo "CURL Options: ".print_r($opts, true);
+            $msg =  "CURL Options: ".print_r($opts, true);
+            $msg = str_replace( self::$instance->username,"apiuser",$msg);
+            $msg = str_replace( self::$instance->password,"apipassword",$msg);
+            echo $msg;
         }
 
         // Go go gadget!  Do your magic!

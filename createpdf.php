@@ -1,6 +1,6 @@
 <?php
 //////////
-// 
+//
 // (c) Travis Mathis - travisdmathis@gmail.com
 // Zabbix Report Generator v0.4 Beta
 //
@@ -16,15 +16,18 @@ error_reporting(E_ALL);
 set_time_limit(1800);
 
 // Process GET variables
-if (isset($_GET['debug']))	 { $debug	= true; } 
-else				 { $debug	= false; }
+if (isset($_GET['debug']))	 {
+  $debug	= true;
+} else {
+  $debug	= false;
+}
 if (isset($_GET['HostID']))	 { $hostid	= filter_input(INPUT_GET,'HostID', FILTER_SANITIZE_STRING); }
 if (isset($_GET['GroupID']))	 { $groupid	= filter_input(INPUT_GET,'GroupID', FILTER_SANITIZE_STRING); }
 if (isset($_GET['ReportType']))  { $reporttype	= filter_input(INPUT_GET,'ReportType', FILTER_SANITIZE_STRING); }
 if (isset($_GET['ReportRange'])) {
 	if ($_GET['ReportRange'] == "last") {
 		$timeperiod		= filter_input(INPUT_GET,'timePeriod', FILTER_SANITIZE_STRING);
-		// Format $timeperiod into seconds 
+		// Format $timeperiod into seconds
 		if    ($timeperiod == 'Hour')		{ $timeperiod = '3600';     }
 		elseif($timeperiod == 'Day')		{ $timeperiod = '86400';    }
 		elseif($timeperiod == 'PrevDay')	{ $timeperiod = '86400';    }
@@ -40,7 +43,7 @@ if (isset($_GET['ReportRange'])) {
 		//var_dump($_GET);
 		// TODO: Check if start/end is empty
 		if (isset($_GET['startdate'])) {
-			if ($_GET['startdate'] == "") { 
+			if ($_GET['startdate'] == "") {
 				echo "<font color=\"red\"><h1>Startdate is missing!</h1></font></br>\n";
 				echo "When setting custom report period, startdate is required</br>\n";
 				exit;
@@ -50,11 +53,11 @@ if (isset($_GET['ReportRange'])) {
 		$stime      = date('YmdHis',$starttime);
 		$endtime    = strtotime($_GET['enddate'] . " " . $_GET['endtime']);
 		$timeperiod = $endtime - $starttime;
-		if ($starttime > $endtime) { 
-			echo "<font color=\"red\"><h1>Startdate need to be before tomorrow or end date!</h1></font></br>\n"; 
+		if ($starttime > $endtime) {
+			echo "<font color=\"red\"><h1>Startdate need to be before tomorrow or end date!</h1></font></br>\n";
 			exit;
 		} elseif ($endtime - $starttime < 3600) {
-			echo "<font color=\"red\"><h1>Time frame need to be minimum 1 hour!</h1></font></br>\n"; 
+			echo "<font color=\"red\"><h1>Time frame need to be minimum 1 hour!</h1></font></br>\n";
 			exit;
 		}
 	}
@@ -96,7 +99,7 @@ if ($debug) {
 }
 // get graphids
 // Login to Zabbix API using ZabbixAPI.class.php
-ZabbixAPI::debugEnabled(TRUE);
+ZabbixAPI::debugEnabled($z_api_debug_enabled);
 ZabbixAPI::login($z_server,$z_user,$z_pass)
 	or die('Unable to login: '.print_r(ZabbixAPI::getLastError(),true));
 
@@ -218,7 +221,7 @@ $collecting=0;
 $code='';
 
 foreach ($data as $key => $line){
-  // go through each line, showing it as required, if it is surrounded by '<>' then 
+  // go through each line, showing it as required, if it is surrounded by '<>' then
   // assume that it is a title
   $line=chop($line);
   if (strlen($line) && $line[0]=='#'){
@@ -293,7 +296,7 @@ foreach ($data as $key => $line){
     // the ezpdf function will take care of all of the wrapping etc.
     $pdf->ezText($line,$size,$textOptions);
   }
-  
+
 }
 
 $pdf->ezStopPageNumbers(1,1);
